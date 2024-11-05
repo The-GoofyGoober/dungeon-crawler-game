@@ -1,0 +1,96 @@
+import random
+
+# Dungeon layout: ' ' is empty, 'P' is player, 'E' is enemy, 'T' is treasure
+dungeon = [
+    [' ', ' ', 'E', ' '],
+    [' ', 'T', ' ', 'E'],
+    [' ', ' ', ' ', ' '],
+    ['E', ' ', 'P', ' ']
+]
+
+# Player stats
+player = {
+    "health": 20,
+    "attack": 5,
+    "position": [3, 2]
+}
+
+# Enemy stats
+enemy = {
+    "health": 10,
+    "attack": 3
+}
+
+# Movement function
+def move_player(direction):
+    x, y = player["position"]
+    if direction == "up" and x > 0:
+        x -= 1
+    elif direction == "down" and x < len(dungeon) - 1:
+        x += 1
+    elif direction == "left" and y > 0:
+        y -= 1
+    elif direction == "right" and y < len(dungeon[0]) - 1:
+        y += 1
+    else:
+        print("Invalid move!")
+        return
+
+    player["position"] = [x, y]
+    check_encounter(x, y)
+
+# Check encounters when player moves
+def check_encounter(x, y):
+    if dungeon[x][y] == 'E':
+        print("Encountered an enemy!")
+        combat()
+    elif dungeon[x][y] == 'T':
+        print("You found the treasure! You win!")
+        exit_game()
+
+# Basic combat system
+def combat():
+    global enemy
+    while player["health"] > 0 and enemy["health"] > 0:
+        enemy["health"] -= player["attack"]
+        print(f"You hit the enemy! Enemy health: {enemy['health']}")
+        if enemy["health"] <= 0:
+            print("You defeated the enemy!")
+            return
+        
+        player["health"] -= enemy["attack"]
+        print(f"The enemy hits you! Your health: {player['health']}")
+        if player["health"] <= 0:
+            print("You have been defeated! Game Over.")
+            exit_game()
+
+# Exit the game
+def exit_game():
+    print("Thanks for playing!")
+    quit()
+
+# Game loop
+def game_loop():
+    while True:
+        print(f"Player Health: {player['health']}")
+        print("Move: up, down, left, right")
+        command = input("Enter your move: ").lower()
+        move_player(command)
+        print_dungeon()
+
+# Print dungeon layout
+def print_dungeon():
+    for i, row in enumerate(dungeon):
+        row_display = ""
+        for j, cell in enumerate(row):
+            if [i, j] == player["position"]:
+                row_display += "P "
+            else:
+                row_display += cell + " "
+        print(row_display)
+    print()
+
+# Start the game
+print("Welcome to the Dungeon!")
+print_dungeon()
+game_loop()
